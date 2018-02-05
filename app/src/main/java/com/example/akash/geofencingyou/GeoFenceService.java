@@ -16,6 +16,7 @@ import android.support.annotation.Nullable;
 import android.support.annotation.StringDef;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.SharedPreferencesCompat;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.firebase.jobdispatcher.JobService;
@@ -23,6 +24,7 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.Result;
 import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.Geofence;
 import com.google.android.gms.location.GeofencingRequest;
 import com.google.android.gms.location.LocationServices;
@@ -34,10 +36,11 @@ import javax.xml.datatype.Duration;
  * Created by akash on 24/3/17.
  */
 
-public class GeoFenceService extends JobService implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener,ResultCallback {
+public class GeoFenceService extends JobService implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
     GoogleApiClient mGoogleApiClient;
     Location mGeoLocation;
     Geofence mGeofence;
+    com.firebase.jobdispatcher.JobParameters jobParameters;
 
     @Override
     public boolean onStartJob(com.firebase.jobdispatcher.JobParameters job) {
@@ -47,7 +50,7 @@ public class GeoFenceService extends JobService implements GoogleApiClient.Conne
                 .addApi(LocationServices.API)
                 .build();
         mGoogleApiClient.connect();
-
+        jobParameters =job;
         return false;
     }
 
@@ -99,7 +102,29 @@ public class GeoFenceService extends JobService implements GoogleApiClient.Conne
 
                 builder.addGeofence(mGeofence);
 
-                LocationServices.GeofencingApi.addGeofences(mGoogleApiClient, builder.build(), pendingIntent).setResultCallback(this);
+                LocationServices.GeofencingApi.addGeofences(mGoogleApiClient, builder.build(), pendingIntent).setResultCallback(new ResultCallback<Status>() {
+                    @Override
+                    public void onResult(@NonNull Status status) {
+                        if (status.isSuccess()) {
+                            // Successfully registered
+                            Log.e("GeoFenceService","Geofence Registered");
+                            jobFinished(jobParameters,false);
+
+                        } else if (status.hasResolution()) {
+                            // Google provides a way to fix the issue
+                    /*
+                    status.startResolutionForResult(
+                            mContext,     // your current activity used to receive the result
+                            RESULT_CODE); // the result code you'll look for in your
+                    // onActivityResult method to retry registering
+                    */
+                            Log.e("GeoFenceService", "Resolution Required: " + status.getStatusMessage());
+                        } else {
+                            // No recovery. Weep softly or inform the user.
+                            Log.e("GeoFenceService", "Registering failed: " + status.getStatusMessage());
+                        }
+                    }
+                });
 
             }
         }
@@ -119,8 +144,4 @@ public class GeoFenceService extends JobService implements GoogleApiClient.Conne
         Toast.makeText(GeoFenceService.this,"", Toast.LENGTH_SHORT);
     }
 
-    @Override
-    public void onResult(@NonNull Result result) {
-        Toast.makeText(GeoFenceService.this,"", Toast.LENGTH_SHORT);
-    }
 }
