@@ -68,11 +68,11 @@ public class MyIntentServiceGeoFencing extends IntentService {
             GeofencingEvent geofencingEvent = GeofencingEvent.fromIntent(intent);
             if(geofencingEvent.getGeofenceTransition()== Geofence.GEOFENCE_TRANSITION_ENTER)
             {
-                message="Entering Appstudioz";
+                message="Entering In the Geofence";
             }
             else if(geofencingEvent.getGeofenceTransition()== Geofence.GEOFENCE_TRANSITION_EXIT)
             {
-                message="Exiting Appstudioz";
+                message="Exiting from the Geofence";
             }
             NotificationCompat.Builder mBuilder =
                     new NotificationCompat.Builder(this)
@@ -88,13 +88,13 @@ public class MyIntentServiceGeoFencing extends IntentService {
 // Builds the notification and issues it.
             mNotifyMgr.notify(mNotificationId, mBuilder.build());
 //            ((Vibrator)getSystemService(VIBRATOR_SERVICE)).vibrate(800);
-            if(message.equals("Entering Appstudioz")) {
-                ((AudioManager) getSystemService(AUDIO_SERVICE)).setRingerMode(AudioManager.RINGER_MODE_VIBRATE);
-            }
-            else
-            {
-                ((AudioManager) getSystemService(AUDIO_SERVICE)).setRingerMode(AudioManager.RINGER_MODE_NORMAL);
-            }
+//            if(message.equals("Entering Appstudioz")) {
+//                ((AudioManager) getSystemService(AUDIO_SERVICE)).setRingerMode(AudioManager.RINGER_MODE_VIBRATE);
+//            }
+//            else
+//            {
+//                ((AudioManager) getSystemService(AUDIO_SERVICE)).setRingerMode(AudioManager.RINGER_MODE_NORMAL);
+//            }
 
         }
     }

@@ -34,11 +34,32 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
         animationDrawable.setEnterFadeDuration(2000);
         animationDrawable.setExitFadeDuration(3000);
 
+
+
+
 //        transitionDrawable = (TransitionDrawable) constraintLayout.getBackground();
 //        transitionDrawable.startTransition(2000);
 
         if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(MainActivity.this, new String[] {android.Manifest.permission.ACCESS_FINE_LOCATION},100);
+        }
+
+        else {
+            FirebaseJobDispatcher firebaseJobDispatcher = new FirebaseJobDispatcher(new GooglePlayDriver(MainActivity.this));
+            Job job = firebaseJobDispatcher.newJobBuilder()
+                    .setService(GeoFenceService.class)
+                    .setTag("Geofence")
+                    .setLifetime(Lifetime.UNTIL_NEXT_BOOT)
+                    .setRecurring(false)
+                    .setTrigger(Trigger.executionWindow(0, 0))
+                    .setReplaceCurrent(true)
+                    .setRetryStrategy(RetryStrategy.DEFAULT_EXPONENTIAL)
+                    .setConstraints(
+                            Constraint.ON_ANY_NETWORK
+                    )
+                    .build();
+
+            firebaseJobDispatcher.mustSchedule(job);
         }
 
 
@@ -56,8 +77,9 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
                 .setTag("Geofence")
                 .setLifetime(Lifetime.UNTIL_NEXT_BOOT)
                 .setTag("DeviceGeoFenceService")
-                .setRecurring(true)
-                .setTrigger(Trigger.executionWindow(1800, 3600))
+                .setRecurring(false)
+                .setReplaceCurrent(true)
+                .setTrigger(Trigger.executionWindow(0, 0))
                 .setRetryStrategy(RetryStrategy.DEFAULT_EXPONENTIAL)
                 .setConstraints(
                         Constraint.ON_ANY_NETWORK
