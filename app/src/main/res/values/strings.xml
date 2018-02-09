@@ -1,3 +1,6 @@
 <resources>
     <string name="app_name">GeoFencingYou</string>
+    <string name="txt_enter_geofence">Entering In the Geofence</string>
+    <string name="txt_exiting_geofence">Exiting from the Geofence</string>
+    <string name="txt_notification_title">Geofence Notification</string>
 </resources>

@@ -26,16 +26,16 @@ public class MyIntentServiceGeoFencing extends IntentService {
             String message = "";
             GeofencingEvent geofencingEvent = GeofencingEvent.fromIntent(intent);
             if (geofencingEvent.getGeofenceTransition() == Geofence.GEOFENCE_TRANSITION_ENTER) {
-                message = "Entering In the Geofence";
+                message = getString(R.string.txt_enter_geofence);
                 Log.e("GeoFenceService", "Entering Geofence");
             } else if (geofencingEvent.getGeofenceTransition() == Geofence.GEOFENCE_TRANSITION_EXIT) {
-                message = "Exiting from the Geofence";
+                message = getString(R.string.txt_exiting_geofence);
                 Log.e("GeoFenceService", "Exiting Geofence");
             }
             NotificationCompat.Builder mBuilder =
                     new NotificationCompat.Builder(this)
                             .setSmallIcon(R.drawable.cast_ic_notification_small_icon)
-                            .setContentTitle("Geofence Notification")
+                            .setContentTitle(getString(R.string.txt_notification_title))
                             .setContentText(message);
 
             // Sets an ID for the notification
